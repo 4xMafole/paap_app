@@ -44,4 +44,5 @@ List<Category> getCategory(){
   category.imageUrl = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80";
   categoryList.add(category);
 
+  return categoryList;
 }
