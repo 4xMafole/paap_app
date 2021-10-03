@@ -5,8 +5,7 @@ class Article {
   late String url;
   late String urlToImage;
   late String content;
-  DateTime publishedAt;
 
   Article(this.author, this.title, this.description, this.url, this.urlToImage,
-      this.content, this.publishedAt);
+      this.content);
 }

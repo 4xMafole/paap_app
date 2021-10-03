@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:paap_app/helper/data.dart';
 import 'package:paap_app/helper/news.dart';
 import 'package:paap_app/models/Article.dart';
 import 'package:paap_app/models/Category.dart';
+import 'package:paap_app/views/article_view.dart';
+import 'package:paap_app/views/category_news.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -51,9 +54,9 @@ class _HomeState extends State<Home> {
               ),
             )
           : SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Column(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Column(
                   children: <Widget>[
                     // CATEGORIES
                     Container(
@@ -70,44 +73,55 @@ class _HomeState extends State<Home> {
                     ),
 
                     // BLOGS
-                    Container(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: articleList.length,
-                        itemBuilder: (context, index){
-                           return BlogTile(
-                             imageUrl: articleList[index].urlToImage,
-                             title: articleList[index].title,
-                             description: articleList[index].description,
-                           );
-                        },
+                    SingleChildScrollView(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 16),
+                        child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: articleList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return BlogTile(
+                              imageUrl: articleList[index].urlToImage,
+                              title: articleList[index].title,
+                              description: articleList[index].description,
+                              url: articleList[index].url,
+                            );
+                          },
+                        ),
                       ),
                     )
                   ],
                 ),
               ),
-          ),
+            ),
     );
   }
 }
 
 class CategoryTile extends StatelessWidget {
-  final imageUrl, categoryName;
+  final String imageUrl, categoryName;
 
-  CategoryTile({this.imageUrl, this.categoryName});
+  CategoryTile({required this.imageUrl, required this.categoryName});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CategoryNews(categoryName.toLowerCase())));
+      },
       child: Container(
         margin: EdgeInsets.only(right: 16),
         child: Stack(
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: 120,
                 height: 60,
                 fit: BoxFit.cover,
@@ -136,19 +150,43 @@ class CategoryTile extends StatelessWidget {
 }
 
 class BlogTile extends StatelessWidget {
-  final String imageUrl, title, description;
+  final String imageUrl, title, description, url;
 
   BlogTile(
-      {required this.imageUrl, required this.title, required this.description});
+      {required this.imageUrl,
+      required this.title,
+      required this.description,
+      required this.url});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 16),
       child: Column(
         children: <Widget>[
-          Image.network(imageUrl),
-          Text(title),
-          Text(description)
+          ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ArticleView(blogUrl: url)));
+                  },
+                  child: Image.network(imageUrl))),
+          SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+                fontWeight: FontWeight.w400),
+          ),
+          SizedBox(height: 8),
+          Text(
+            description,
+            style: TextStyle(color: Colors.black54),
+          )
         ],
       ),
     );
